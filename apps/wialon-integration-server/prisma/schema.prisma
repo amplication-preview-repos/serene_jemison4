@@ -1,0 +1,62 @@
+datasource db {
+  provider = "postgresql"
+  url      = env("DB_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model Device {
+  createdAt    DateTime          @default(now())
+  id           String            @id @default(cuid())
+  imei         String?
+  lastLocation String?
+  messages     Message[]
+  name         String?
+  sessions     Session[]
+  status       EnumDeviceStatus?
+  updatedAt    DateTime          @updatedAt
+}
+
+model Location {
+  altitude  Int?
+  createdAt DateTime  @default(now())
+  id        String    @id @default(cuid())
+  latitude  Float?
+  longitude Float?
+  messages  Message[]
+  timestamp DateTime?
+  updatedAt DateTime  @updatedAt
+}
+
+model Session {
+  createdAt DateTime           @default(now())
+  device    Device?            @relation(fields: [deviceId], references: [id])
+  deviceId  String?
+  endedAt   DateTime?
+  id        String             @id @default(cuid())
+  startedAt DateTime?
+  status    EnumSessionStatus?
+  updatedAt DateTime           @updatedAt
+}
+
+model Message {
+  createdAt  DateTime  @default(now())
+  data       String?
+  device     Device?   @relation(fields: [deviceId], references: [id])
+  deviceId   String?
+  id         String    @id @default(cuid())
+  location   Location? @relation(fields: [locationId], references: [id])
+  locationId String?
+  timestamp  DateTime?
+  updatedAt  DateTime  @updatedAt
+}
+
+enum EnumDeviceStatus {
+  Option1
+}
+
+enum EnumSessionStatus {
+  Option1
+}
